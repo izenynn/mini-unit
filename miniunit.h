@@ -71,7 +71,7 @@ static struct {
 } while (0)
 
 #define TEST_CASE(test) \
-  void test(void)
+  static void test(void)
 
 #define TEST_MAIN \
   int main(void)
