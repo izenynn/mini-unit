@@ -9,6 +9,14 @@
 #define C_GREEN "\033[0;32m"
 #define C_RED   "\033[0;31m"
 
+/* __FILE__ is part of the C PreProcessor standard... but who knows.
+ * also, this way you can also change the FILENAME displayed on the output just
+ * be defining FILENAME on the command line with `-DFILENAME=...`
+ */
+#ifndef FILENAME
+#define FILENAME ((__FILE__) ? (__FILE__) : ("unknown file"))
+#endif // FILENAME
+
 /* if you define this in your own Makefile, make sure its declared as a string,
  * the quotes are very important:
  * CFLAGS += -DRELATIVE_PATH="\"$(RELATIVE_PATH)\""
@@ -57,16 +65,17 @@ static struct {
  */
 #define WIDTH (int)50
 #define END() do { \
-  int file_width = (int)strlen(__FILE__) - RELATIVE_PATH_LEN >= WIDTH - 4 \
+  char* filename_ptr = FILENAME; \
+  int file_width = (int)strlen(filename_ptr) - RELATIVE_PATH_LEN >= WIDTH - 4 \
       ? WIDTH - 4 \
-      : (int)strlen(__FILE__) + RELATIVE_PATH_LEN; \
-  int dots_width = (int)strlen(__FILE__) - RELATIVE_PATH_LEN >= WIDTH - 4 \
+      : (int)strlen(filename_ptr) + RELATIVE_PATH_LEN; \
+  int dots_width = (int)strlen(filename_ptr) - RELATIVE_PATH_LEN >= WIDTH - 4 \
       ? 0 \
-      : WIDTH - (int)strlen(__FILE__) + RELATIVE_PATH_LEN - 4; \
+      : WIDTH - (int)strlen(filename_ptr) + RELATIVE_PATH_LEN - 4; \
   printf( \
       "%.*s %.*s", \
       file_width, \
-      __FILE__ + RELATIVE_PATH_LEN, \
+      filename_ptr + RELATIVE_PATH_LEN, \
       dots_width, \
       ".................................................."); \
   if (test_stats.failed_tests == 0) { \
