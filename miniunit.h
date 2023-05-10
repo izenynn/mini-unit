@@ -10,16 +10,19 @@
 #define C_RED   "\033[0;31m"
 
 static struct {
-  unsigned int total_tests;
-  unsigned int passed_tests;
-  unsigned int failed_tests;
-  bool current_test_success;
-} test_stats = { 0, 0, 0, true };
+  unsigned int  total_tests;
+  unsigned int  passed_tests;
+  unsigned int  failed_tests;
+  bool          current_test_success;
+  const char*   current_test_name;
+} test_stats = { 0, 0, 0, true, NULL };
 
-// TODO print RUN_TEST name
 #define ASSERT(test, message) do { \
     if (!(test)) { \
-      printf(C_RED "FAIL:" C_OFF " %s\n", message); \
+      printf( \
+          C_RED "FAIL" C_OFF ": %s: %s\n", \
+          test_stats.current_test_name, \
+          message); \
       test_stats.current_test_success = false; \
     } \
   } while (0)
@@ -27,6 +30,7 @@ static struct {
 #define RUN_TEST(test) do { \
     ++test_stats.total_tests; \
     test_stats.current_test_success = true; \
+    test_stats.current_test_name = #test; \
     test(); \
     if (test_stats.current_test_success) { \
       ++test_stats.passed_tests; \
