@@ -12,7 +12,7 @@ CC = gcc
 CPPFLAGS =
 CFLAGS = -Wall -Wextra -Werror -Wpedantic -Wshadow -O2
 
-CFLAGS += -I./ $(addprefix -I./, $(RELATIVE_PATH)/$(INCLUDES))
+CFLAGS += -I./ -I./$(RELATIVE_PATH) $(addprefix -I./, $(RELATIVE_PATH)/$(INCLUDES))
 
 # **************************************************************************** #
 #                                    DIRS                                      #
