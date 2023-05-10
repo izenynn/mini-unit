@@ -46,12 +46,12 @@ static struct {
 // - 2 for the "ok/ko" text
 #define WIDTH (int)50
 #define END() do { \
-  int file_width = strlen(__FILE__) >= WIDTH - 4 \
+  int file_width = (int)strlen(__FILE__) >= WIDTH - 4 \
       ? WIDTH - 4 \
-      : strlen(__FILE__); \
-  int dots_width = strlen(__FILE__) >= WIDTH - 4 \
+      : (int)strlen(__FILE__); \
+  int dots_width = (int)strlen(__FILE__) >= WIDTH - 4 \
       ? 0 \
-      : WIDTH - strlen(__FILE__) - 4; \
+      : WIDTH - (int)strlen(__FILE__) - 4; \
   printf( \
       "%.*s %.*s", \
       file_width, \
