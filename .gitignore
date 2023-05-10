@@ -84,3 +84,6 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# .test file that generates the provided Makefile
+*.test
