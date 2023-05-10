@@ -1,11 +1,13 @@
 #ifndef MINIUNIT_MINIUNIT_H_
 #define MINIUNIT_MINIUNIT_H_
 
-#include "colors.h"
-
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
+
+#define C_OFF   "\033[0m"
+#define C_GREEN "\033[0;32m"
+#define C_RED   "\033[0;31m"
 
 static struct {
   unsigned int total_tests;
@@ -33,12 +35,12 @@ static struct {
     } \
   } while (0)
 
-#define WIDTH (int)50
-// we'll substract:
+
+// for the actual width we'll substract:
 // - the __FILE__ len
 // - 2 for the spaces on the sides
 // - 2 for the "ok/ko" text
-
+#define WIDTH (int)50
 #define END() do { \
   int file_width = strlen(__FILE__) >= WIDTH - 4 \
       ? WIDTH - 4 \

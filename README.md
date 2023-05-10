@@ -13,6 +13,8 @@
 
 A simple unit test framework for C and ASM in C.
 
+*Written in just one small .h! :D*
+
 ## Usage
 
 This project aims to keep unit testing simple, so its pretty easy to use.
