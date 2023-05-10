@@ -14,6 +14,7 @@ static struct {
   bool current_test_success;
 } test_stats = { 0, 0, 0, true };
 
+// TODO print RUN_TEST name
 #define ASSERT(test, message) do { \
     if (!(test)) { \
       printf(C_RED "FAIL:" C_OFF " %s\n", message); \
@@ -31,10 +32,6 @@ static struct {
       ++test_stats.failed_tests; \
     } \
   } while (0)
-
-// #define BEGIN() do { \
-//     ; \
-//   } while (0)
 
 #define WIDTH (int)50
 // we'll substract:

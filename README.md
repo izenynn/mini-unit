@@ -13,37 +13,33 @@ So, I usually add the following to my `Makefile`, take it as a reference for you
 ```Makefile
 # ... CC, CFLAGS, RM, MKDIR, ...
 
-SRC_DIR := src
-OBJ_DIR := obj
 TEST_DIR := tests
 
-SRC_FILES := # ...
 TEST_SRC_FILES := # ...
 
-OBJ_FILES := $(SRC:.c=.o)
 TEST_OBJ_FILES = $(TEST_SRC:.c:.o)
 
-SRC := $(addprefix $(SRC_DIR)/, $(SRC_FILES))
-OBJ := $(addprefix $(OBJ_DIR)/, $(OBJ_FILES))
 TEST_SRC := $(addprefix $(TEST_DIR)/, $(TEST_SRC_FILES))
 TEST_OBJ := $(addprefix $(OBJ_DIR)/, $(TEST_OBJ_FILES))
 
 TEST_BIN = $(patsubst $(SRC_DIR)/%,$(TEST_DIR)/%,$(TEST_SRC:.c=.test))
 
+MU_DIR = mini-unit
+
 # ...
 
 test: $(TEST_BIN)
-    for test in $^; do ./$$test; done
+	for test in $^; do ./$$test; done
 
 $(TEST_DIR)/%_test.test: $(OBJ_DIR)/%_test.o $(OBJ) | $(TEST_DIR)
-    $(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -I./$(MU_DIR) -o $@ $^
 
 $(TEST_DIR):
-    $(MKDIR) $@
+	$(MKDIR) $@
 
 clean:
-    $(RM) $(OBJ_DIR) $(TEST_DIR)
-    # ...
+	$(RM) $(OBJ_DIR) $(TEST_DIR)
+	# ...
 
 .PHONY: test #...
 ```
