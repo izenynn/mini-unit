@@ -9,6 +9,16 @@
 #define C_GREEN "\033[0;32m"
 #define C_RED   "\033[0;31m"
 
+/* if you define this in your own Makefile, make sure its declared as a string,
+ * the quotes are very important:
+ * CFLAGS += -DRELATIVE_PATH="\"$(RELATIVE_PATH)\""
+ */
+#ifndef RELATIVE_PATH
+#define RELATIVE_PATH_LEN (int)0
+#else
+#define RELATIVE_PATH_LEN ((int)strlen(RELATIVE_PATH) + 1)
+#endif // RELATIVE_PATH
+
 static struct {
   unsigned int  total_tests;
   unsigned int  passed_tests;
@@ -40,22 +50,23 @@ static struct {
   } while (0)
 
 
-// for the actual width we'll substract:
-// - the __FILE__ len
-// - 2 for the spaces on the sides
-// - 2 for the "ok/ko" text
+/* for the actual width we'll substract:
+ * - the __FILE__ len (with RELATIVE_PATH substracted)
+ * - 2 for the spaces on the sides
+ * - 2 for the "ok/ko" text
+ */
 #define WIDTH (int)50
 #define END() do { \
-  int file_width = (int)strlen(__FILE__) >= WIDTH - 4 \
+  int file_width = (int)strlen(__FILE__) - RELATIVE_PATH_LEN >= WIDTH - 4 \
       ? WIDTH - 4 \
-      : (int)strlen(__FILE__); \
-  int dots_width = (int)strlen(__FILE__) >= WIDTH - 4 \
+      : (int)strlen(__FILE__) + RELATIVE_PATH_LEN; \
+  int dots_width = (int)strlen(__FILE__) - RELATIVE_PATH_LEN >= WIDTH - 4 \
       ? 0 \
-      : WIDTH - (int)strlen(__FILE__) - 4; \
+      : WIDTH - (int)strlen(__FILE__) + RELATIVE_PATH_LEN - 4; \
   printf( \
       "%.*s %.*s", \
       file_width, \
-      __FILE__, \
+      __FILE__ + RELATIVE_PATH_LEN, \
       dots_width, \
       ".................................................."); \
   if (test_stats.failed_tests == 0) { \

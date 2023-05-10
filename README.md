@@ -98,7 +98,7 @@ TEST_SRC_FILES := \
 TEST_SRC := $(addprefix $(SRC_DIR)/, $(TEST_SRC_FILES))
 ```
 ```makefile
-# create a test rule and make sure you are providing the necessary values
+# create a test rule and make sure you are providing the necessary values:
 #   - `SRC`: your project src files, in my case it would be something
 #            like `src/ft_strlen.c src/ft_strcmp.c ...`
 #
@@ -106,6 +106,13 @@ TEST_SRC := $(addprefix $(SRC_DIR)/, $(TEST_SRC_FILES))
 #
 #   - `RELATIVE_PATH`: the relative path to your project from the 'mini-unit'
 #                      directory location.
+#
+#                      this is also used to cut it off from test log output
+#                      so instead of `../src/ft_strlen_test.c` it prints the
+#                      rute relative to the project `src/ft_strlen_test.c`
+#
+#                      if you add this to your own Makefile make sure it has the
+#                      correct syntax, check the provided Makefile for details
 #
 #   - `INCLUDES`: mini-unit includes your project path with -I./$(RELATIVE_PATH)
 #                 but if you compile your project with -I./<some_path>,

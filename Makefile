@@ -13,6 +13,7 @@ CPPFLAGS =
 CFLAGS = -Wall -Wextra -Werror -Wpedantic -Wshadow -O2
 
 CFLAGS += -I./ -I./$(RELATIVE_PATH) $(addprefix -I./, $(RELATIVE_PATH)/$(INCLUDES))
+CFLAGS += -DRELATIVE_PATH="\"$(RELATIVE_PATH)\""
 
 # **************************************************************************** #
 #                                    DIRS                                      #
