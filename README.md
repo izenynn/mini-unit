@@ -1,8 +1,17 @@
 # mini-unit
 
+## Contents
+
+- [Info](#info)
+- [Usage](#usage)
+- [Automatic tests execution](#automatic-tests-execution)
+	- [With the provided Makefile](#with-the-provided-makefile)
+	- [An example of a custom Makefile](#an-example-of-a-custom-makefile)
+	- [Other](#other)
+
 ## Info
 
-A simple unit test framework for C in C.
+A simple unit test framework for C and ASM in C.
 
 ## Usage
 
@@ -49,14 +58,74 @@ Just renember to call the `TEST_CASE`s using `RUN_TEST`, and to call `END()` at 
 
 *For a complete usage example, you can check my `libasm` project [here](https://github.com/izenynn/libasm), in which I use `mini-unit` to test the functions of the library.*
 
-## Automating your tests
+## Automatic tests execution
+
+### With the provided Makefile
 
 For unit testing I don't like to have the test files in a `tests/` folder, I prefer to put them next to the respective `.c` so I have both files at hand easily.
 
-Now you would probably want to add some `test` rule to your Makefile, here is a quick example:
-For a complete and more *beautiful* example, you can check my `libasm` project `Makefile` [here](https://github.com/izenynn/libasm), in which I use `mini-unit` to test the functions of the library.
+If you also like to place your tests with the original file, you can use the provided `Makefile` for automating your tests, just clone this project inside your project directory:
+```bash
+git clone --recurse-submodules https://github.com/izenynn/mini-unit.git
+```
 
-```Makefile
+And assuming you project structure is as follows:
+```
+project/
+├── ...
+├── include/
+├── src/
+├── Makefile
+└── mini-unit/
+    ├── Makefile
+    └── ...
+```
+
+add this to your project Makefile:
+```makefile
+# define the necessary variables
+
+# mini-unit location :)
+TEST_DIR := mini-unit
+
+# your test files
+TEST_SRC_FILES := \
+		ft_strlen_test.c	\
+		ft_strcmp_test.c
+# in my case I have them inside a `src/` directory
+TEST_SRC := $(addprefix $(SRC_DIR)/, $(TEST_SRC_FILES))
+```
+```makefile
+# create a test rule and make sure you are providing the necessary values
+#   - `SRC`: your project src files, in my case it would be something
+#            like `src/ft_strlen.c src/ft_strcmp.c ...`
+#
+#   - `TEST_SRC`: test sources as showed above
+#
+#   - `RELATIVE_PATH`: the relative path to your project from the 'mini-unit'
+#                      directory location.
+#
+#   - `INCLUDES`: mini-unit includes your project path with -I./$(RELATIVE_PATH)
+#                 but if you compile your project with -I./<some_path>,
+#                 add those paths here separated with spaces.
+test:
+	$(MAKE) -C $(TEST_DIR) SRC='$(SRC)' TEST_SRC='$(TEST_SRC)' RELATIVE_PATH='..' INCLUDES='include'
+
+# update your clean rule
+clean:
+	$(MAKE) -C $(TEST_DIR) fclean
+	# ...
+```
+
+*To check a working `Makefile`, you can check my `libasm` project `Makefile` [here](https://github.com/izenynn/libasm).*
+
+And that's all, now run `make test` and have fun! :D
+
+### An example of a custom Makefile
+
+If the provided `Makefile` is not an option for your project, you would probably want to add some `test` rule to your project `Makefile`, here is a quick example assuming your test files follow the `*_test.c` naming convention:
+
+```makefile
 CC = gcc
 CFLAGS = -Wall -Werror -Wextra
 SRC = $(wildcard src/*.c)
@@ -79,9 +148,13 @@ test: $(TEST_BIN)
 		fi; \
 		total=$$((total+1)); \
 	done; \
-	echo "Total tests: $$total"; \
-	echo "Successful tests: $$success"; \
-	echo "Failed tests: $$failure"
+	echo "============================================================"; \
+	echo "test summary"; \
+	echo "============================================================"; \
+	echo "# TOTAL: $$total"; \
+	echo "# PASS:  $$success"; \
+	echo "# FAIL:  $$failure"; \
+	echo "============================================================";
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -98,7 +171,9 @@ clean:
 .SECONDARY: $(TEST_OBJ)
 ```
 
-For a complete and more *beautiful* example, you can check my `libasm` project `Makefile` [here](https://github.com/izenynn/libasm), in which I use `mini-unit` to test the functions of the library.
+### Other
+
+This is a pretty simple test framework, is just some `.h` file, there are tons of ways to make it work with your project, so you can just use the `.h` and implement the automatic execution of the tests in a way that fits your project! :D
 
 ##
 
