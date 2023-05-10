@@ -5,11 +5,14 @@
 RM = rm -rf
 MKDIR = mkdir -p
 
+AS = nasm
+ASFLAGS = -f macho64
+
 CC = gcc
 CPPFLAGS =
 CFLAGS = -Wall -Wextra -Werror -Wpedantic -Wshadow -O2
 
-CFLAGS += $(addprefix -I./, $(RELATIVE_PATH)/$(INCLUDES))
+CFLAGS += -I./ $(addprefix -I./, $(RELATIVE_PATH)/$(INCLUDES))
 
 # **************************************************************************** #
 #                                    DIRS                                      #
@@ -22,14 +25,12 @@ TEST_DIR = tests
 #                                   SOURCES                                    #
 # **************************************************************************** #
 
-OBJ = $(addprefix $(OBJ_DIR)/, $(SRC:.c=.o))
+OBJ := $(addprefix $(OBJ_DIR)/, $(patsubst %.s,%.o,$(patsubst %.c,%.o,$(SRC))))
 
-TEST_OBJ = $(addprefix $(OBJ_DIR)/, $(TEST_SRC:.c=.o))
+TEST_OBJ := $(addprefix $(OBJ_DIR)/, $(TEST_SRC:.c=.o))
 
-TEST_BIN = $(addprefix $(TEST_DIR)/, $(TEST_SRC:%_test.c=%.test))
+TEST_BIN := $(addprefix $(TEST_DIR)/, $(TEST_SRC:%_test.c=%.test))
 	
-SRC = $(addprefix $(RELATIVE_PATH)/, $(SRC))
-
 # **************************************************************************** #
 #                                    RULES                                     #
 # **************************************************************************** #
@@ -61,13 +62,17 @@ test: $(TEST_BIN)
 	echo "# FAIL:  $$fail"; \
 	echo "============================================================";
 
+$(TEST_DIR)/%.test: $(OBJ_DIR)/%_test.o $(filter-out %_test.o, $(OBJ))
+	@$(MKDIR) $(dir $@)
+	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
+
+$(OBJ_DIR)/%.o: $(RELATIVE_PATH)/%.s
+	@$(MKDIR) $(dir $@)
+	$(AS) $(ASFLAGS) -o $@ $<
+
 $(OBJ_DIR)/%.o: $(RELATIVE_PATH)/%.c
 	@$(MKDIR) $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
-
-$(TEST_DIR)/%.test: %_test.o $(filter-out %_test.o, $(OBJ))
-	@$(MKDIR) $(dir $@)
-	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
 
 PHONY += clean
 clean:
@@ -77,7 +82,7 @@ PHONY += fclean
 fclean: clean
 	$(RM) $(TEST_DIR)
 
-.SECONDARY: $(TEST_OBJ)
+.SECONDARY: $(OBJ) $(TEST_OBJ)
 
 .SILENT: $(SILENT)
 .PHONY: $(PHONY)
