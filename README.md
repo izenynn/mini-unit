@@ -34,6 +34,8 @@ Then, add a `TEST_MAIN` and make sure you call the `END()` macro at the end:
 ```c
 #include "miniunit.h"
 
+// END() will output the result and exit with 0 if successful, or 1 if failure,
+// you can take advatage of that if you automate the execution of tests
 TEST_MAIN {
     END();
 }
