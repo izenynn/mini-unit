@@ -56,7 +56,7 @@ TEST_MAIN {
 }
 ```
 
-Of course you can scale this all you want, you can call multiple `ASSERTS` in one `TEST_CASE`, do more `TEST_CASE`s, and since this is just C with macros, you can do whatever you want.
+Of course you can scale this all you want, you can call multiple `ASSERT`s in one `TEST_CASE`, do more `TEST_CASE`s, and since this is just C with macros, you can do whatever you want.
 
 Just renember to call the `TEST_CASE`s using `RUN_TEST`, and to call `END()` at the end.
 
@@ -100,7 +100,7 @@ TEST_SRC_FILES := \
 TEST_SRC := $(addprefix $(SRC_DIR)/, $(TEST_SRC_FILES))
 ```
 ```makefile
-# create a test rule and make sure you are providing the necessary values:
+# create a check rule and make sure you are providing the necessary values:
 #   - `SRC`: your project src files, in my case it would be something
 #            like `src/ft_strlen.c src/ft_strcmp.c ...`
 #
@@ -119,7 +119,7 @@ TEST_SRC := $(addprefix $(SRC_DIR)/, $(TEST_SRC_FILES))
 #   - `INCLUDES`: mini-unit includes your project path with -I./$(RELATIVE_PATH)
 #                 but if you compile your project with -I./<some_path>,
 #                 add those paths here separated with spaces.
-test:
+check:
 	$(MAKE) -C $(TEST_DIR) SRC='$(SRC)' TEST_SRC='$(TEST_SRC)' RELATIVE_PATH='..' INCLUDES='include'
 
 # update your clean rule
@@ -145,9 +145,11 @@ OBJ = $(SRC:.c=.o)
 TEST_OBJ = $(TEST_SRC:.c=.o)
 TEST_BIN = $(patsubst src/%,tests/%,$(TEST_SRC:.c=.test))
 
-all: $(OBJ)
+all: $(NAME)
 
-test: $(TEST_BIN)
+# ...
+
+check: $(TEST_BIN)
 	@total=0; success=0; failure=0; \
 	for test in $^; do \
 		./$$test; \
