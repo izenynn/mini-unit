@@ -38,11 +38,11 @@ TEST_BIN := $(addprefix $(TEST_DIR)/, $(TEST_SRC:%_test.c=%.test))
 
 SILENT := all
 PHONY := all
-all: test
+all: check
 
-SILENT += test
-PHONY += test
-test: $(TEST_BIN)
+SILENT += check
+PHONY += check
+check: $(TEST_BIN)
 	total=0; passs=0; fail=0; \
 	echo; \
 	for test in $^; do \
