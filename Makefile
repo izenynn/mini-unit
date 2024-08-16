@@ -2,18 +2,25 @@
 #                                   COMPILER                                   #
 # **************************************************************************** #
 
+IS_CPP ?= false
+
 RM = rm -rf
 MKDIR = mkdir -p
 
 AS = nasm
 ASFLAGS = -f macho64
 
-CC = gcc
-CPPFLAGS =
-CFLAGS = -Wall -Wextra -Werror -Wpedantic -Wshadow -O2
+CC ?= gcc
+CXX ?= g++
 
-CFLAGS += -I./ -I./$(RELATIVE_PATH) $(addprefix -I./, $(RELATIVE_PATH)/$(INCLUDES))
-CFLAGS += -DRELATIVE_PATH="\"$(RELATIVE_PATH)\""
+CFLAGS ?= -Wall -Wextra -Werror -Wpedantic -Wshadow
+CXXFLAGS ?= -Wall -Wextra -Werror -Wpedantic -Wshadow
+
+COMMON_FLAGS += -I./ -I./$(RELATIVE_PATH) $(addprefix -I./, $(RELATIVE_PATH)/$(INCLUDES))
+COMMON_FLAGS += -DRELATIVE_PATH="\"$(RELATIVE_PATH)\""
+
+CFLAGS += $(COMMON_FLAGS)
+CXXFLAGS += $(COMMON_FLAGS)
 
 # **************************************************************************** #
 #                                    DIRS                                      #
@@ -26,11 +33,11 @@ TEST_DIR = tests
 #                                   SOURCES                                    #
 # **************************************************************************** #
 
-OBJ := $(addprefix $(OBJ_DIR)/, $(patsubst %.s,%.o,$(patsubst %.c,%.o,$(SRC))))
+OBJ := $(addprefix $(OBJ_DIR)/, $(foreach ext,s c cpp, $(SRC:%.$(ext)=%.o)))
 
-TEST_OBJ := $(addprefix $(OBJ_DIR)/, $(TEST_SRC:.c=.o))
+TEST_OBJ := $(addprefix $(OBJ_DIR)/, $(foreach ext,c cpp, $(TEST_SRC:%.$(ext)=%.o)))
 
-TEST_BIN := $(addprefix $(TEST_DIR)/, $(TEST_SRC:%_test.c=%.test))
+TEST_BIN := $(addprefix $(TEST_DIR)/, $(foreach ext,c cpp, $(TEST_SRC:%_test.$(ext)=%.test)))
 	
 # **************************************************************************** #
 #                                    RULES                                     #
@@ -67,7 +74,11 @@ check: $(TEST_BIN)
 
 $(TEST_DIR)/%.test: $(OBJ_DIR)/%_test.o $(filter-out %_test.o, $(OBJ))
 	@$(MKDIR) $(dir $@)
+ifeq ($(IS_CPP), true)
+	$(CXX) -o $@ $^ $(CXXFLAGS) $(LDFLAGS)
+else
 	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
+endif
 
 $(OBJ_DIR)/%.o: $(RELATIVE_PATH)/%.s
 	@$(MKDIR) $(dir $@)
@@ -76,6 +87,10 @@ $(OBJ_DIR)/%.o: $(RELATIVE_PATH)/%.s
 $(OBJ_DIR)/%.o: $(RELATIVE_PATH)/%.c
 	@$(MKDIR) $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
+
+$(OBJ_DIR)/%.o: $(RELATIVE_PATH)/%.cpp
+	@$(MKDIR) $(dir $@)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
 
 PHONY += clean
 clean:
