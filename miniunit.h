@@ -66,7 +66,7 @@ static struct {
  */
 #define WIDTH (int)50
 #define END() do {							\
-	char* ptr = FILENAME;						\
+	const char* ptr = FILENAME;						\
 	int file_width =						\
 		(int)strlen(ptr) - RELATIVE_PATH_LEN >= WIDTH - 4	\
 		? WIDTH - 4						\
