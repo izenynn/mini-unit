@@ -33,11 +33,11 @@ TEST_DIR = tests
 #                                   SOURCES                                    #
 # **************************************************************************** #
 
-OBJ := $(addprefix $(OBJ_DIR)/, $(foreach ext,s c cpp, $(SRC:%.$(ext)=%.o)))
+OBJ := $(addprefix $(OBJ_DIR)/, $(patsubst %.s,%.o,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SRC)))))
 
-TEST_OBJ := $(addprefix $(OBJ_DIR)/, $(foreach ext,c cpp, $(TEST_SRC:%.$(ext)=%.o)))
+TEST_OBJ := $(addprefix $(OBJ_DIR)/, $(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(TEST_SRC))))
 
-TEST_BIN := $(addprefix $(TEST_DIR)/, $(foreach ext,c cpp, $(TEST_SRC:%_test.$(ext)=%.test)))
+TEST_BIN := $(addprefix $(TEST_DIR)/, $(patsubst %_test.c,%.test,$(patsubst %_test.cpp,%.test,$(TEST_SRC))))
 	
 # **************************************************************************** #
 #                                    RULES                                     #
